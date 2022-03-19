@@ -12,7 +12,7 @@ import {
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import { useNavigation } from "@react-navigation/core";
 import { useSelector } from "react-redux";
-import { sleectTravelTimeInformation } from "../slices/navSlice";
+import { slectTravelTimeInformation } from "../slices/navSlice";
 
 const data = [
   {
@@ -35,10 +35,12 @@ const data = [
   },
 ];
 
+const SURGE_CHARGE_RATE = 1.5;
+
 const RideOptionsCard = () => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
-  const travelTimeInformation = useSelector(sleectTravelTimeInformation);
+  const travelTimeInformation = useSelector(slectTravelTimeInformation);
 
   return (
     <SafeAreaView style={tw`bg-white flex-1`}>
@@ -50,7 +52,7 @@ const RideOptionsCard = () => {
           <Icon name="chevron-left" type="fontawesome" />
         </TouchableOpacity>
         <Text style={tw`text-center py-5 text-xl`}>
-          Select a ride - {travelTimeInformation?.distance.text}
+          Select a ride - {travelTimeInformation?.distance?.text}
         </Text>
       </View>
 
@@ -74,14 +76,24 @@ const RideOptionsCard = () => {
             />
             <View style={tw`-ml-6`}>
               <Text style={tw`text-xl font-semibold`}>{title}</Text>
-              <Text>Travel Time...</Text>
+              <Text>{travelTimeInformation?.duration?.text} Travel Time</Text>
             </View>
-            <Text style={tw`text-xl`}>$20</Text>
+            <Text style={tw`text-xl`}>
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(
+                (travelTimeInformation?.duration?.value *
+                  SURGE_CHARGE_RATE *
+                  multiplier) /
+                  100
+              )}
+            </Text>
           </TouchableOpacity>
         )}
       />
 
-      <View>
+      <View style={tw`mt-auto border-t border-gray-200`}>
         <TouchableOpacity
           disabled={!selected}
           style={tw`bg-black py-3 m-3 ${!selected && "bg-gray-300"}`}
